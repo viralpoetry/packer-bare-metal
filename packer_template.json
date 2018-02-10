@@ -1,0 +1,67 @@
+{
+  "provisioners": [{
+    "type": "shell",
+    "script": "setup.sh"
+  }],
+    "variables": {
+      "iso_file": "https://nl.alpinelinux.org/alpine/v3.6/releases/x86/alpine-extended-3.6.1-x86.iso",
+      "iso_checksum": "a6c6958b4c5fbed04a83e3d2a072313a08fb53668e7441117a28867a25404208",
+      "name": "alpine-clean",
+      "version": "3.6.1",
+      "headless": "false",
+      "disk_size": "768",
+      "memory": "512",
+      "cpus": "1",
+      "ssh_password": "alpine",
+      "ssh_wait_timeout": "90s",
+      "out_dir": "output-box",
+      "shutdown_command": "poweroff"
+    },
+    "builders": [{
+      "boot_wait": "30s",
+      "vm_name": "{{ user `name`}}-{{user `version`}}",
+      "type": "virtualbox-iso",
+      "format": "ova",
+      "guest_additions_mode": "disable",
+      "guest_os_type": "Linux26_64",
+      "headless": "{{user `headless`}}",
+      "disk_size": "{{user `disk_size`}}",
+      "iso_url": "{{user `iso_file`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "sha256",
+      "ssh_username": "root",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_wait_timeout": "{{user `ssh_wait_timeout`}}",
+      "shutdown_command": "{{user `shutdown_command`}}",
+      "http_directory": "http",
+      "boot_command": [
+        "<wait10><wait10><wait10>",
+        "<enter><wait5>root<enter><wait>",
+        "ifconfig eth0 up && udhcpc -i eth0<enter><wait5>",
+        "wget http://{{ .HTTPIP }}:{{ .HTTPPort }}/answers<enter><wait>",
+        "setup-alpine -f answers<enter><wait10>",
+        "alpine<enter><wait>",
+        "alpine<enter><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "y<enter>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "<wait10><wait10><wait10>",
+        "rc-service sshd stop<enter>",
+        "mount /dev/sda3 /mnt<enter>",
+        "echo 'PermitRootLogin yes' >> /mnt/etc/ssh/sshd_config<enter>",
+        "umount /mnt<enter>",
+        "reboot<enter>"
+      ],
+      "hard_drive_interface": "sata",
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--memory", "{{user `memory`}}"],
+        ["modifyvm", "{{.Name}}", "--cpus", "{{user `cpus`}}"]
+      ]
+
+    }]
+  }
