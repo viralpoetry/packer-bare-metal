@@ -4,7 +4,7 @@ This repository should demonstrate that it is possible to provision OS with Pack
 
 I am using random [Alpine Packer builder](https://github.com/ketzacoatl/packer-alpine/tree/master/00-iso-install) from the GitHub (thanks!) because of Alpine small size.  
 
-Firstly, run `packer builder packer_template.json` to create VirtualBox `OVA` archive which contains disk and configuration files.  
+Firstly, run `packer build packer_template.json` to create VirtualBox `OVA` archive which contains disk and configuration files.  
 
 Then decompress `OVA` tar archive and convert `VMDK` to `RAW`:  
 ```
